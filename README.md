@@ -37,3 +37,28 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
+```
+
+啟動後開啟：
+
+`http://127.0.0.1:8000/api/tickets/`
+
+## API 操作畫面
+
+### 查詢 Ticket 清單
+
+`GET /api/tickets/`
+
+![查詢 Ticket 清單](screenshots/ticket-list-get.jpg)
+
+### 修改 Ticket 狀態
+
+`PATCH /api/tickets/1/`
+
+```json
+{
+  "status": "in_progress"
+}
+```
+
+![修改 Ticket 狀態](screenshots/ticket-patch.jpg)
