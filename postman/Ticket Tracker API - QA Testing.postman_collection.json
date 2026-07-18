@@ -1,0 +1,554 @@
+{
+  "info": {
+    "_postman_id": "52ae077e-69cf-405a-a8ab-925ee7e5f0f1",
+    "name": "Ticket Tracker API - QA Testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49741499",
+    "_collection_link": "https://go.postman.co/collection/49741499-52ae077e-69cf-405a-a8ab-925ee7e5f0f1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "TC-TK-001 - List Tickets -baseline",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-002 - Create Ticket - baseline",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "let responseJson = null;\r",
+              "let jsonParseError = null;\r",
+              "\r",
+              "try {\r",
+              "    responseJson = pm.response.json();\r",
+              "} catch (error) {\r",
+              "    jsonParseError = error;\r",
+              "}\r",
+              "\r",
+              "pm.test(\"Response body is valid JSON\", function () {\r",
+              "    pm.expect(\r",
+              "        jsonParseError,\r",
+              "        jsonParseError ? jsonParseError.message : \"Response should be valid JSON\"\r",
+              "    ).to.equal(null);\r",
+              "});\r",
+              "\r",
+              "if (responseJson !== null) {\r",
+              "    pm.test(\"Response contains a numeric ticket id\", function () {\r",
+              "        pm.expect(\r",
+              "            responseJson,\r",
+              "            \"Response should contain an id field\"\r",
+              "        ).to.have.property(\"id\");\r",
+              "\r",
+              "        pm.expect(\r",
+              "            responseJson.id,\r",
+              "            \"Ticket id should have the expected data type\"\r",
+              "        ).to.be.a(\"number\");\r",
+              "    });\r",
+              "\r",
+              "    if (typeof responseJson.id === \"number\") {\r",
+              "        pm.environment.set(\"ticket_id\", responseJson.id);\r",
+              "    }\r",
+              "\r",
+              "    pm.test(\"Ticket id is saved to the environment\", function () {\r",
+              "        const savedTicketId = Number(\r",
+              "            pm.environment.get(\"ticket_id\")\r",
+              "        );\r",
+              "\r",
+              "        pm.expect(\r",
+              "            savedTicketId,\r",
+              "            \"Saved ticket_id should match the response id\"\r",
+              "        ).to.equal(responseJson.id);\r",
+              "    });\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\"QA CRUD baseline 2026-07-18\",\r\n    \"description\":\"Manual CRUD baseline test\",\r\n    \"status\":\"open\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-003 - Get Created Ticket - baseline",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "\r",
+              "pm.test(\"Status code is 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "let responseJson = null;\r",
+              "let jsonParseError = null;\r",
+              "\r",
+              "try {\r",
+              "    responseJson = pm.response.json();\r",
+              "} catch (error) {\r",
+              "    jsonParseError = error;\r",
+              "}\r",
+              "\r",
+              "pm.test(\"Response body is valid JSON\", function () {\r",
+              "    pm.expect(\r",
+              "        jsonParseError,\r",
+              "        jsonParseError ? jsonParseError.message : \"Response should be valid JSON\"\r",
+              "    ).to.equal(null);\r",
+              "});\r",
+              "\r",
+              "if (responseJson !== null) {\r",
+              "    const expectedTicketId = Number(\r",
+              "        pm.environment.get(\"ticket_id\")\r",
+              "    );\r",
+              "\r",
+              "    pm.test(\"Returned ticket id matches saved ticket_id\", function () {\r",
+              "        pm.expect(\r",
+              "            responseJson.id,\r",
+              "            \"Returned id should match the ticket created in the previous request\"\r",
+              "        ).to.equal(expectedTicketId);\r",
+              "    });\r",
+              "\r",
+              "    pm.test(\"Response contains required ticket fields\", function () {\r",
+              "        const requiredFields = [\r",
+              "            \"id\",\r",
+              "            \"title\",\r",
+              "            \"description\",\r",
+              "            \"status\",\r",
+              "            \"created_at\",\r",
+              "            \"updated_at\"\r",
+              "        ];\r",
+              "\r",
+              "        requiredFields.forEach(function (field) {\r",
+              "            pm.expect(\r",
+              "                responseJson,\r",
+              "                \"Response is missing required field: \" + field\r",
+              "            ).to.have.property(field);\r",
+              "        });\r",
+              "    });\r",
+              "\r",
+              "    pm.test(\"Ticket fields have correct data types\", function () {\r",
+              "        pm.expect(responseJson.id, \"id should be a number\").to.be.a(\"number\");\r",
+              "        pm.expect(responseJson.title, \"title should be a string\").to.be.a(\"string\");\r",
+              "        pm.expect(\r",
+              "            responseJson.description,\r",
+              "            \"description should be a string\"\r",
+              "        ).to.be.a(\"string\");\r",
+              "        pm.expect(responseJson.status, \"status should be a string\").to.be.a(\"string\");\r",
+              "        pm.expect(\r",
+              "            responseJson.created_at,\r",
+              "            \"created_at should be a string\"\r",
+              "        ).to.be.a(\"string\");\r",
+              "        pm.expect(\r",
+              "            responseJson.updated_at,\r",
+              "            \"updated_at should be a string\"\r",
+              "        ).to.be.a(\"string\");\r",
+              "    });\r",
+              "\r",
+              "    pm.test(\"New ticket has open status\", function () {\r",
+              "        pm.expect(responseJson.status).to.equal(\"open\");\r",
+              "    });\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/tickets/{{ticket_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            "{{ticket_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-004 - Update Ticket - baseline",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// TODO 3：更新前應保留的 description\r",
+              "const expectedDescription = \"\";\r",
+              "\r",
+              "const requestBody = JSON.parse(pm.request.body.raw);\r",
+              "\r",
+              "pm.test(\"Status code is 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "let responseJson = null;\r",
+              "let jsonParseError = null;\r",
+              "\r",
+              "try {\r",
+              "    responseJson = pm.response.json();\r",
+              "} catch (error) {\r",
+              "    jsonParseError = error;\r",
+              "}\r",
+              "\r",
+              "pm.test(\"Response body is valid JSON\", function () {\r",
+              "    pm.expect(\r",
+              "        jsonParseError,\r",
+              "        jsonParseError ? jsonParseError.message : \"Response should be valid JSON\"\r",
+              "    ).to.equal(null);\r",
+              "});\r",
+              "\r",
+              "if (responseJson !== null) {\r",
+              "    const expectedTicketId = Number(\r",
+              "        pm.environment.get(\"ticket_id\")\r",
+              "    );\r",
+              "\r",
+              "    pm.test(\"Returned ticket id matches saved ticket_id\", function () {\r",
+              "        pm.expect(\r",
+              "            responseJson.id,\r",
+              "            \"Updated ticket id should match the created ticket id\"\r",
+              "        ).to.equal(expectedTicketId);\r",
+              "    });\r",
+              "\r",
+              "    pm.test(\"Updated fields match the request body\", function () {\r",
+              "        pm.expect(\r",
+              "            responseJson.title,\r",
+              "            \"Returned title should match the PATCH request\"\r",
+              "        ).to.equal(requestBody.title);\r",
+              "\r",
+              "        pm.expect(\r",
+              "            responseJson.status,\r",
+              "            \"Returned status should match the PATCH request\"\r",
+              "        ).to.equal(requestBody.status);\r",
+              "    });\r",
+              "\r",
+              "    pm.test(\"Unmodified description is preserved\", function () {\r",
+              "        pm.expect(\r",
+              "            responseJson.description,\r",
+              "            \"PATCH should not remove the existing description\"\r",
+              "        ).to.equal(\"Manual CRUD baseline test\");\r",
+              "    });\r",
+              "\r",
+              "    pm.test(\"Response contains timestamp fields\", function () {\r",
+              "        pm.expect(responseJson.created_at).to.be.a(\"string\");\r",
+              "        pm.expect(responseJson.updated_at).to.be.a(\"string\");\r",
+              "    });\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\"QA CRUD baseline update\",\r\n    \"status\":\"in_progress\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/{{ticket_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            "{{ticket_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-005 - Get Updated Ticket - baseline Copy",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200 OK\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "let responseJson = null;\r",
+              "let jsonParseError = null;\r",
+              "\r",
+              "try {\r",
+              "    responseJson = pm.response.json();\r",
+              "} catch (error) {\r",
+              "    jsonParseError = error;\r",
+              "}\r",
+              "\r",
+              "pm.test(\"Response body is valid JSON\", function () {\r",
+              "    pm.expect(\r",
+              "        jsonParseError,\r",
+              "        jsonParseError ? jsonParseError.message : \"Response should be valid JSON\"\r",
+              "    ).to.equal(null);\r",
+              "});\r",
+              "\r",
+              "if (responseJson !== null) {\r",
+              "    const expectedTicketId = Number(\r",
+              "        pm.environment.get(\"ticket_id\")\r",
+              "    );\r",
+              "\r",
+              "    pm.test(\"Returned ticket id matches saved ticket_id\", function () {\r",
+              "        pm.expect(\r",
+              "            responseJson.id,\r",
+              "            \"Returned id should match the updated ticket id\"\r",
+              "        ).to.equal(expectedTicketId);\r",
+              "    });\r",
+              "\r",
+              "    pm.test(\"Updated ticket data is persisted\", function () {\r",
+              "        pm.expect(\r",
+              "            responseJson.title,\r",
+              "            \"Updated title should remain saved\"\r",
+              "        ).to.equal(\"QA CRUD baseline update\");\r",
+              "\r",
+              "        pm.expect(\r",
+              "            responseJson.status,\r",
+              "            \"Updated status should remain saved\"\r",
+              "        ).to.equal(\"in_progress\");\r",
+              "    });\r",
+              "\r",
+              "    pm.test(\"Unmodified description is preserved\", function () {\r",
+              "        pm.expect(\r",
+              "            responseJson.description,\r",
+              "            \"Description should not be changed by the PATCH request\"\r",
+              "        ).to.equal(\"Manual CRUD baseline test\");\r",
+              "    });\r",
+              "\r",
+              "    pm.test(\"Response contains required timestamp fields\", function () {\r",
+              "        pm.expect(responseJson.created_at).to.be.a(\"string\");\r",
+              "        pm.expect(responseJson.updated_at).to.be.a(\"string\");\r",
+              "    });\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/tickets/{{ticket_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            "{{ticket_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-006 - Delete Ticket - baseline",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204\", function () {\r",
+              "    pm.response.to.have.status(204);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response body is empty\", function () {\r",
+              "    pm.expect(\r",
+              "        pm.response.text(),\r",
+              "        \"Delete request should not return a body\"\r",
+              "    ).to.equal(\"\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/tickets/{{ticket_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            "{{ticket_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-007 - Confirm Ticket Deleted - baseline Copy",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 404\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});\r",
+              "\r",
+              "let responseJson = null;\r",
+              "let jsonParseError = null;\r",
+              "\r",
+              "try{\r",
+              "    responseJson = pm.response.json();\r",
+              "} catch (error) {\r",
+              "    jsonParseError = error;\r",
+              "}\r",
+              "\r",
+              "pm.test(\"Response body is valid JSON\", function () {\r",
+              "    pm.expect(jsonParseError,\r",
+              "    jsonParseError ? jsonParseError.massage : \"Response should be a valid JSON\"\r",
+              "    ).to.equal(null)\r",
+              "});\r",
+              "\r",
+              "if (responseJson != null) {\r",
+              "    pm.test(\"Response contains an error detail\", function () {\r",
+              "        pm.expect(\r",
+              "            responseJson,\r",
+              "            \"404 response should contain a detail field\"\r",
+              "        ).to.have.property(\"detail\");\r",
+              "\r",
+              "        pm.expect(\r",
+              "            responseJson.detail,\r",
+              "            \"Error detail shoulde not be empty\"\r",
+              "        ).to.be.a(\"string\").and.not.be.empty;\r",
+              "    }); \r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/tickets/{{ticket_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            "{{ticket_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
