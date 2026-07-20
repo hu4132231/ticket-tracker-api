@@ -53,6 +53,8 @@
 
 Runner 執行完成後，再次查詢 Ticket 清單，確認沒有留下本次測試建立的資料。
 
+![Postman Collection Runner Result](screenshots/postman-runner-87-passed.jpg)
+
 ### Postman 檔案
 
 - Collection：`postman/Ticket Tracker API - QA Testing.postman_collection.json`
