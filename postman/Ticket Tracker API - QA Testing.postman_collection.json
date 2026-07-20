@@ -549,6 +549,1271 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "TC-TK-008 - Create Ticket - missing required title",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be valid JSON\", function () {\r",
+              "    pm.expect(function() {\r",
+              "        pm.response.json();\r",
+              "        }).to.not.throw(); // expect(執行這個函式).不會拋出錯誤\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain 'title' field with error message\", function () {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property('title'); // 檢查 responseJson 有沒有 'title' 屬性 \r",
+              "    pm.expect(responseJson.title).to.be.an('array').that.is.not.empty;\r",
+              "    pm.expect(responseJson.title[0]).to.equal('This field is required.');\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"description\": \"Negative test for missing required title\",\r\n  \"status\": \"open\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-009 - Create Ticket - invalid status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be valid JSON\", function () {\r",
+              "    pm.expect(function() {\r",
+              "        pm.response.json();\r",
+              "        }).to.not.throw(); // expect(執行這個函式).不會拋出錯誤\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain 'status' field with invalid value\", function () {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property('status');\r",
+              "    pm.expect(responseJson.status).to.be.an('array');\r",
+              "    pm.expect(responseJson.status).to.include(\"\\\"pending\\\" is not a valid choice.\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"Negative test for invalid status\",\r\n  \"description\": \"Status should only accept defined choices\",\r\n  \"status\": \"pending\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-010 - Create Ticket - title exceeds maximum length",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be valid JSON\", function () {\r",
+              "    pm.expect(function() {\r",
+              "        pm.response.json();\r",
+              "        }).to.not.throw(); // expect(執行這個函式).不會拋出錯誤\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain title with maximum length error\", function() {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"title\");\r",
+              "    pm.expect(responseJson.title).to.be.an(\"array\");\r",
+              "    pm.expect(responseJson.title[0]).to.equal(\"Ensure this field has no more than 200 characters.\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Generated title should contain 201 characters\", function() {\r",
+              "    const longTitle = pm.variables.get(\"long_title\");\r",
+              "\r",
+              "    pm.expect(longTitle).to.have.lengthOf(201);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.variables.set(\"long_title\", \"A\".repeat(201));"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"{{long_title}}\",\r\n  \"description\": \"Boundary test for title longer than 200 characters\",\r\n  \"status\": \"open\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-011 - Create Ticket - title at maximum length",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be valid JSON\", function () {\r",
+              "    pm.expect(function() {\r",
+              "        pm.response.json();\r",
+              "        }).to.not.throw(); // expect(執行這個函式).不會拋出錯誤\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain title with 200 characters\", function() {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"title\");\r",
+              "    pm.expect(responseJson.title).to.be.a(\"string\");\r",
+              "    pm.expect(responseJson.title).to.have.lengthOf(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Created title should match generated title\", function(){\r",
+              "    const responseJson = pm.response.json();\r",
+              "    const maxlengthTitle = pm.variables.get(\"max_length_title\");\r",
+              "\r",
+              "    pm.expect(responseJson.title).to.equal(maxlengthTitle);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain created ticket_ID\", function() {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"id\");\r",
+              "    pm.expect(responseJson.id).to.be.a(\"number\");\r",
+              "    pm.collectionVariables.set(\"boundary_ticket_id\", responseJson.id);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.variables.set(\"max_length_title\", \"A\".repeat(200));"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"title\": \"{{max_length_title}}\",\r\n  \"description\": \"Boundary test for title exactly 200 characters\",\r\n  \"status\": \"open\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-012 - Delete Boundary Test Ticket - cleanup",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204\", function () {\r",
+              "    pm.response.to.have.status(204);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response body is empty\", function () {\r",
+              "    pm.expect(pm.response.text()).to.equal(\"\");\r",
+              "});\r",
+              "\r",
+              "pm.collectionVariables.unset(\"boundary_ticket_id\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/{{boundary_ticket_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            "{{boundary_ticket_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-013 - Create Ticket - blank title",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be a valid JSON\", function () {\r",
+              "    pm.expect(function () {\r",
+              "        pm.response.json();\r",
+              "    }).to.not.throw();// This checks if the response can be parsed as JSON without throwing an error\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain title with blank field error\",function () {\r",
+              "    const responseJson = pm.response.json()\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property('title') ;\r",
+              "    pm.expect(responseJson.title).to.be.an('array') ;\r",
+              "    pm.expect(responseJson.title).to.include(\"This field may not be blank.\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\"\",\r\n  \"description\": \"Negative test for blank title\",\r\n  \"status\": \"open\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-014 - Create Ticket - whitespace-only title",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be valid JSON\", function () {\r",
+              "    pm.expect(function (){\r",
+              "        pm.response.json();\r",
+              "    }).to.not.throw();\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Request title should contain only whiltespace\", function (){\r",
+              "    const requestbody = JSON.parse(pm.request.body.raw);\r",
+              "\r",
+              "    pm.expect(requestbody.title).to.have.length(1);\r",
+              "    pm.expect(requestbody.title.trim()).to.equal(\"\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain title with blank field error\", function (){\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"title\");\r",
+              "    pm.expect(responseJson.title).to.be.an(\"array\");\r",
+              "    pm.expect(responseJson.title).to.include(\"This field may not be blank.\" );\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\" \",\r\n  \"description\": \"Negative test for whitespace-only title\",\r\n  \"status\": \"open\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-015 - Create Ticket - omitted status uses default",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be valid JSON\", function() {\r",
+              "    pm.expect(function () {\r",
+              "        pm.response.json();\r",
+              "    }).to.not.throw(); // 預期執行 JSON 解析時，不會拋出錯誤。\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Request body should omit status\", function () {\r",
+              "    const requestBody = JSON.parse(pm.request.body.raw);\r",
+              "\r",
+              "    pm.expect(requestBody).to.not.have.property(\"status\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Created ticket should have status 'open'\", function () {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"status\");\r",
+              "    pm.expect(responseJson.status).to.equal(\"open\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Created ticket should have a valid 'id'\", function () {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"id\");\r",
+              "    pm.expect(responseJson.id).to.be.a(\"number\");\r",
+              "\r",
+              "    pm.collectionVariables.set(\"default_ticket_id\", responseJson.id);\r",
+              "    \r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\"Test default ticket status\",\r\n    \"description\":\"Status is intentionally omitted\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-016 - Delete Default Status Ticket - cleanup",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204\", function () {\r",
+              "    pm.response.to.have.status(204);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response body is empty\", function () {\r",
+              "    pm.expect(pm.response.text()).to.equal(\"\");\r",
+              "});\r",
+              "\r",
+              "pm.collectionVariables.unset(\"default_ticket_id_ticket_id\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/{{default_ticket_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            "{{default_ticket_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-017 - Create Ticket - null title",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be a valid JSON\", function () {\r",
+              "    pm.expect(function () {\r",
+              "        pm.response.json();\r",
+              "    }).to.not.throw();// This checks if the response can be parsed as JSON without throwing an error\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Request title should be null\", function() {\r",
+              "    const requestBody = JSON.parse(pm.request.body.raw);\r",
+              "\r",
+              "    pm.expect(requestBody).to.have.property(\"title\");\r",
+              "    pm.expect(requestBody.title).to.be.null;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain title with null field error\",function() {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"title\");\r",
+              "    pm.expect(responseJson.title).to.be.an(\"array\");\r",
+              "    pm.expect(responseJson.title).to.include(\"This field may not be null.\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":null,\r\n  \"description\": \"Negative test for null title\",\r\n  \"status\": \"open\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-018 - Create Ticket - null status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be a valid JSON\", function () {\r",
+              "    pm.expect(function () {\r",
+              "        pm.response.json();\r",
+              "    }).to.not.throw(); // This checks if the response can be parsed as JSON without throwing an error\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Request status should be null\", function() {\r",
+              "    const requestBody = JSON.parse(pm.request.body.raw);\r",
+              "\r",
+              "    pm.expect(requestBody).to.have.property(\"status\");\r",
+              "    pm.expect(requestBody.status).to.be.null;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain status with null field error\",function() {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"status\");\r",
+              "    pm.expect(responseJson.status).to.be.an(\"array\");\r",
+              "    pm.expect(responseJson.status).to.include(\"This field may not be null.\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\"Negative test for invalid status\",\r\n  \"description\": \"Status is explicity set to null\",\r\n  \"status\": null\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-019 - Create Ticket - blank status",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be a valid JSON\", function () {\r",
+              "    pm.expect(function () {\r",
+              "        pm.response.json();\r",
+              "    }).to.not.throw(); // This checks if the response can be parsed as JSON without throwing an error\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Request status should be an empty string\", function() {\r",
+              "    const requestBody = JSON.parse(pm.request.body.raw);\r",
+              "\r",
+              "    pm.expect(requestBody).to.have.property(\"status\");\r",
+              "    pm.expect(requestBody.status).to.equal(\"\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain status with invalid choice error\",function() {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"status\");\r",
+              "    pm.expect(responseJson.status).to.be.an(\"array\");\r",
+              "    pm.expect(responseJson.status).to.include(\"\\\"\\\" is not a valid choice.\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\"Negative test for blank status\",\r\n    \"description\": \"Status is explicity set an empty string\",\r\n    \"status\": \"\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-020 - Create Ticket - null description",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 400\", function () {\r",
+              "    pm.response.to.have.status(400);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should be a valid JSON\", function () {\r",
+              "    pm.expect(function () {\r",
+              "        pm.response.json();\r",
+              "    }).to.not.throw(); // This checks if the response can be parsed as JSON without throwing an error\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Request description should be null\", function() {\r",
+              "    const requestBody = JSON.parse(pm.request.body.raw);\r",
+              "\r",
+              "    pm.expect(requestBody).to.have.property(\"description\");\r",
+              "    pm.expect(requestBody.description).to.be.null;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response should contain description with null field error\",function() {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"description\");\r",
+              "    pm.expect(responseJson.description).to.be.an(\"array\");\r",
+              "    pm.expect(responseJson.description).to.include(\"This field may not be null.\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\"Negative test for null descripton\",\r\n  \"description\":null,\r\n  \"status\": \"open\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-021 - Create Ticket - blank description allowed",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.test(\"Response body is valid JSON\", function () {\r",
+              "    pm.expect(function() {\r",
+              "        pm.response.json();\r",
+              "    }).not.to.throw(); // Expect this function not to throw an error.\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Created ticket should perserve blank description\", function() {\r",
+              "    const responseJson = pm.response.json();\r",
+              "    \r",
+              "    pm.expect(responseJson).to.have.property(\"description\");\r",
+              "    pm.expect(responseJson.description).to.be.a(\"string\");\r",
+              "    pm.expect(responseJson.description).to.equal(\"\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Created ticket should have a valid id\", function() {\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.have.property(\"id\");\r",
+              "    pm.expect(responseJson.id).to.be.a(\"number\");\r",
+              "\r",
+              "    pm.collectionVariables.set(\"blank_description_ticket_id\", responseJson.id);\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\"Validation test for blank description\", // Validation Test：專門測試輸入資料是否符合欄位規則\r\n    \"description\":\" \",\r\n    \"status\":\"open\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-022 - Delete Blank Description Ticket - cleanup",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204\", function () {\r",
+              "    pm.response.to.have.status(204);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response body is empty\", function () {\r",
+              "    pm.expect(pm.response.text()).to.equal(\"\");\r",
+              "});\r",
+              "\r",
+              "pm.collectionVariables.unset(\"blank_description_ticket_id\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/{{blank_description_ticket_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            "{{blank_description_ticket_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-023 - Create Ticket - omitted description allowed",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response body is valid JSON\", function () {\r",
+              "    pm.expect(function() {\r",
+              "        pm.response.json();\r",
+              "    }).not.to.throw(); // Expect this function not to throw an error.\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Request body should omit description\", function() {\r",
+              "    const requestBody = JSON.parse(pm.request.body.raw);\r",
+              "\r",
+              "    pm.expect(requestBody).to.not.have.property(\"description\");\r",
+              "    });\r",
+              "\r",
+              "pm.test(\"Response body should have an empty description\", function() {\r",
+              "    const responseBody = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseBody).to.have.property(\"description\");\r",
+              "    pm.expect(responseBody.description).to.be.a(\"string\");\r",
+              "    pm.expect(responseBody.description).to.equal(\"\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response body should have a valid id\", function() {\r",
+              "    const responseBody = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseBody).to.have.property(\"id\");\r",
+              "    pm.expect(responseBody.id).to.be.a(\"number\");\r",
+              "\r",
+              "\r",
+              "    pm.collectionVariables.set(\"omitted_description_ticket_id\", responseBody.id);\r",
+              "    });"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\"Validation test for omitted description\",\r\n    \"status\":\"open\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TC-TK-024 - Delete Omitted Description Ticket - cleanup",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 204\", function () {\r",
+              "    pm.response.to.have.status(204);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response body is empty\", function () {\r",
+              "    pm.expect(pm.response.text()).to.equal(\"\");\r",
+              "});\r",
+              "\r",
+              "pm.collectionVariables.unset(\"omitted_description_ticket_id_description_ticket_id\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tickets/{{omitted_description_ticket_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tickets",
+            "{{omitted_description_ticket_id}}",
+            ""
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "ticket_id",
+      "value": ""
+    },
+    {
+      "key": "omitted_description_ticket_id",
+      "value": ""
+    },
+    {
+      "key": "default_ticket_id",
+      "value": ""
     }
   ]
 }
