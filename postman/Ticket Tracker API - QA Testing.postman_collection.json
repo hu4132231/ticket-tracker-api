@@ -233,9 +233,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "// TODO 3：更新前應保留的 description\r",
-              "const expectedDescription = \"\";\r",
-              "\r",
               "const requestBody = JSON.parse(pm.request.body.raw);\r",
               "\r",
               "pm.test(\"Status code is 200 OK\", function () {\r",
@@ -303,8 +300,12 @@
         {
           "listen": "prerequest",
           "script": {
-            "exec": [],
-            "type": "text/javascript"
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -501,7 +502,7 @@
               "\r",
               "pm.test(\"Response body is valid JSON\", function () {\r",
               "    pm.expect(jsonParseError,\r",
-              "    jsonParseError ? jsonParseError.massage : \"Response should be a valid JSON\"\r",
+              "    jsonParseError ? jsonParseError.message : \"Response should be a valid JSON\"\r",
               "    ).to.equal(null)\r",
               "});\r",
               "\r",
@@ -527,8 +528,12 @@
         {
           "listen": "prerequest",
           "script": {
-            "exec": [],
-            "type": "text/javascript"
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
           }
         }
       ],
@@ -1146,7 +1151,7 @@
               "    pm.expect(pm.response.text()).to.equal(\"\");\r",
               "});\r",
               "\r",
-              "pm.collectionVariables.unset(\"default_ticket_id_ticket_id\");"
+              "pm.collectionVariables.unset(\"default_ticket_id\");"
             ],
             "type": "text/javascript",
             "packages": {},
@@ -1550,7 +1555,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n    \"title\":\"Validation test for blank description\", // Validation Test：專門測試輸入資料是否符合欄位規則\r\n    \"description\":\" \",\r\n    \"status\":\"open\"\r\n}",
+          "raw": "{\r\n    \"title\":\"Validation test for blank description\",\r\n    \"description\":\" \",\r\n    \"status\":\"open\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -1731,7 +1736,7 @@
               "    pm.expect(pm.response.text()).to.equal(\"\");\r",
               "});\r",
               "\r",
-              "pm.collectionVariables.unset(\"omitted_description_ticket_id_description_ticket_id\");"
+              "pm.collectionVariables.unset(\"omitted_description_ticket_id\");"
             ],
             "type": "text/javascript",
             "packages": {},
@@ -1808,11 +1813,7 @@
       "value": ""
     },
     {
-      "key": "omitted_description_ticket_id",
-      "value": ""
-    },
-    {
-      "key": "default_ticket_id",
+      "key": "blank_description_ticket_id",
       "value": ""
     }
   ]
