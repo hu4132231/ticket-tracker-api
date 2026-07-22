@@ -46,14 +46,16 @@
 ### Collection Runner 結果
 
 - Requests：24
-- Tests Passed：87
+- Postman Tests Passed：91
 - Failed：0
 - Errors：0
 - Iterations：1
+- Test Cases：24
+- Test Case 文件：[docs/test-cases.xlsx](docs/test-cases.xlsx)
 
 Runner 執行完成後，再次查詢 Ticket 清單，確認沒有留下本次測試建立的資料。
 
-![Postman Collection Runner Result](screenshots/postman-runner-87-passed.jpg)
+![Postman Collection Runner Result](screenshots/postman-runner-91-passed.jpg)
 
 ### Postman 檔案
 
