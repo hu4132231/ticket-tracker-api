@@ -9,6 +9,58 @@
   "item": [
     {
       "name": "TC-TK-001 - List Tickets - valid request",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Response body is a valid JSON\", function(){\r",
+              "    pm.expect(function(){\r",
+              "        pm.response.json();\r",
+              "    }).not.to.throw();\r",
+              "});\r",
+              "\r",
+              "\r",
+              "pm.test(\"Response body is an array\", function(){\r",
+              "    const responseJson = pm.response.json();\r",
+              "\r",
+              "    pm.expect(responseJson).to.be.an('array');\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Each ticket contains required fields\", function(){\r",
+              "    const responseBody = pm.response.json();\r",
+              "\r",
+              "    responseBody.forEach(ticket => {\r",
+              "        pm.expect(ticket).to.have.property('id');\r",
+              "        pm.expect(ticket).to.have.property('title');\r",
+              "        pm.expect(ticket).to.have.property('description');\r",
+              "        pm.expect(ticket).to.have.property('status');\r",
+              "        pm.expect(ticket).to.have.property('created_at');\r",
+              "        pm.expect(ticket).to.have.property('updated_at');\r",
+              "        });\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [],
@@ -1810,10 +1862,6 @@
   "variable": [
     {
       "key": "ticket_id",
-      "value": ""
-    },
-    {
-      "key": "blank_description_ticket_id",
       "value": ""
     }
   ]
